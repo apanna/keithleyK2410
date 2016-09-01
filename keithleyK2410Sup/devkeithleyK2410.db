@@ -1,0 +1,516 @@
+#########################################################################
+# __Author__        =   Alireza Panna, NIH/NHLBI (IPL)
+# __status__        =   stable
+# __date__          =   10/2014
+# __version__       =   1.0
+# __to-do__         =   1. More records can be added.
+# __update-log__    =   4/17/15: changed record names according to IPL PV
+#                                convention
+#                   =   7/20/16: remove $(R) macro
+#########################################################################
+
+# Short and long form of identification string
+
+record(stringin, "$(P):IDN")
+{
+    field(DESC, "SCPI identification string")
+    field(DTYP, "stream")
+    field(INP,  "@devkeithleyK2410.proto getIDN(39) $(PORT) $(A)")
+    field(PINI, "YES")
+}
+
+###################################
+# Global to any measurement (V,I,R)
+###################################
+
+# Display Subsystem
+record(bo, "$(P):DISPLAY")
+{   
+    field(DESC, "Enable/Disable display")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setD(:DISPlay:ENABLe) $(PORT) $(A)")
+    field(FLNK, "$(P):DISPLAY_RBV")
+}
+record(bi, "$(P):DISPLAY_RBV")
+{
+    field(DESC, "Display Enabled?")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getD(:DISPlay:ENABLe) $(PORT) $(A)")
+}
+
+# Display digit resolution
+record(mbbo, "$(P):RANGE")
+{
+    field(DESC, "Set display Range")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setD(:DISPlay:DIGits) $(PORT) $(A)")
+    field(ZRVL, "4")
+    field(ZRST, "3.5")
+    field(ONVL, "5")
+    field(ONST, "4.5")
+    field(TWVL, "6")
+    field(TWST, "5.5")
+    field(THVL, "7")
+    field(THST, "6.5")
+    field(FLNK, "$(P):RANGE_RBV")   
+}
+record(mbbi, "$(P):RANGE_RBV")
+{
+    field(DESC, "Get display Range")
+    field(DTYP, "stream")
+    field(INP,  "@devkeithleyK2410.proto getD(:DISPlay:DIGits) $(PORT) $(A)")
+    field(ZRVL, "4")
+    field(ZRST, "3.5")
+    field(ONVL, "5")
+    field(ONST, "4.5")
+    field(TWVL, "6")
+    field(TWST, "5.5")
+    field(THVL, "7")
+    field(THST, "6.5")
+    field(PINI, "YES")   
+}
+
+# Measurement speed (integration time NPLC) 
+record(ao, "$(P):NPLC")
+{
+    field(DESC, "Set integration time")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setF(:CURRent:NPLCycles) $(PORT) $(A)")
+    field(EGU,  "Cycles")
+    field(PREC, "3")
+    field(LOPR, "0.01")
+    field(HOPR, "10")
+    field(DRVL, "0.01")
+    field(DRVH, "10")
+    field(FLNK, "$(P):NPLC_RBV")
+}
+record(ai, "$(P):NPLC_RBV")
+{
+    field(DESC, "Reading integration time")
+    field(DTYP, "stream")
+    field(INP,  "@devkeithleyK2410.proto getF(:CURRent:NPLCycles) $(PORT) $(A)")
+    field(EGU,  "Cycles")
+    field(PREC, "3")
+    field(LOPR, "0.01")
+    field(HOPR, "10")
+    field(PINI, "YES")
+}
+
+# Power line frequency 50Hz/400Hz or 60Hz
+record(mbbo, "$(P):LINE_FREQ")
+{
+    field(DESC, "Select line frequency")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setD(:SYSTem:LFRequency) $(PORT) $(A)")
+    field(ZRVL, "50")
+    field(ZRST, "50 Hz")
+    field(ONVL, "60")
+    field(ONST, "60 Hz")
+    field(FLNK, "$(P):LINE_FREQ_RBV")
+}
+record(mbbi, "$(P):LINE_FREQ_RBV")
+{
+    field(DESC, "Line frequency?")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getD(SYSTem:LFRequency) $(PORT) $(A)")
+    field(ZRVL, "50")
+    field(ZRST, "50 Hz")
+    field(ONVL, "60")
+    field(ONST, "60 Hz")
+    field(PINI, "YES")
+}
+
+# Auto zero setting
+record(mbbo, "$(P):AZERO")
+{
+    field(DESC, "Set/Reset Auto-Zero")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setazMode $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "ONCE")
+    field(FLNK, "$(P):AZERO_RBV")
+}
+record(mbbi, "$(P):AZERO_RBV")
+{
+    field(DESC, "Auto-Zero?")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getD(:SYSTem:AZERo:STATe) $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "ONCE")
+    field(PINI, "YES")
+}
+
+# 4 wire measurements (Remote sense)
+record(bo, "$(P):RSENSE")
+{
+    field(DESC, "Disable/Enable Remote Sense")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setD(:SYSTem:RSENse) $(PORT) $(A)")
+    field(ZNAM, "OFF")
+    field(ONAM, "ON")
+    field(FLNK, "$(P):RSENSE_RBV")
+}
+record(bi, "$(P):RSENSE_RBV")
+{
+    field(DESC, "Remote Sense?")
+    field(DTYP, "stream")
+    field(INP,  "@devkeithleyK2410.proto getD(SYSTem:RSENse) $(PORT) $(A)")
+    field(ZNAM, "OFF")
+    field(ONAM, "ON")
+    field(PINI, "YES")
+}
+
+#################
+# Source Settings
+#################
+
+# Turn source output on/off
+record(bo, "$(P):SOURCE_STATE")
+{
+    field(DESC, "Turn source output ON or OFF")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setD(:OUTPut) $(PORT) $(A)")
+    field(FLNK, "$(P):SOURCE_STATE_RBV")
+}
+record(bi, "$(P):SOURCE_STATE_RBV")
+{
+    field(DESC, "Turn source output ON/OFF")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getD(:OUTPut) $(PORT) $(A)")
+    field(PINI, "YES")  
+}
+
+# Select source Mode I or V (Memory mode not added!)
+record(mbbo, "$(P):SOURCE_MODE")
+{
+    field(DESC, "Set the Source Mode")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setsMode $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "CURRENT SOURCE")
+    field(ONVL, "1")
+    field(ONST, "VOLTAGE SOURCE")
+} 
+
+# Source Range for V and I 
+record(mbbo, "$(P):IRANGE")
+{
+    field(DESC, "Set the Current Source Range")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setsRange(CURRent) $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "MIN (1uA)")
+    field(ONVL, "1")
+    field(ONST, "MAX (1A)")
+    field(TWVL, "2")
+    field(TWST, "DEFAULT (100uA)")
+}
+record(mbbo, "$(P):VRANGE")
+{
+    field(DESC, "Set the Voltage Source Range")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setsRange(VOLTage) $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "MIN (200mV)")
+    field(ONVL, "1")
+    field(ONST, "MAX (1100V)")
+    field(TWVL, "2")
+    field(TWST, "DEFAULT (20V)")
+}
+
+# Sourcing modes fixed/sweep (list not added)
+record(mbbo, "$(P):IMODE")
+{
+    field(DESC, "Select Current sourcing mode")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setsourcingMode $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "FIXED")
+    field(ONVL, "1")
+    field(ONST, "SWEEP")
+    field(TWVL, "2")
+    field(TWST, "LIST")
+} 
+record(mbbo, "$(P):VMODE")
+{
+    field(DESC, "Select Voltage sourcing mode")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setsourcingMode $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "FIXED")
+    field(ONVL, "1")
+    field(ONST, "SWEEP")
+    field(TWVL, "2")
+    field(TWST, "LIST")
+} 
+
+# Set source Amplitude (fixed Sourcing mode only!)
+record(ao, "$(P):IFIXED")
+{
+    field(DESC, "Set DC Current value")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF(:SOURce:CURRent) $(PORT) $(A)")
+    field(EGU,  "A")
+    field(PREC, "5")
+    field(FLNK, "$(P):IFIXED_RBV")
+}
+record(ai, "$(P):IFIXED_RBV")
+{
+    field(DESC, "Get DC Current value")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getF(:SOURce:CURRent) $(PORT) $(A)")
+    field(EGU,  "A")
+    field(PREC, "5")
+    field(LOPR, "-1.5")
+    field(HOPR, "1.5")
+    field(PINI, "YES")
+}
+record(ao, "$(P):VFIXED")
+{
+    field(DESC, "Set DC Voltage value")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF(:SOURce:VOLTage) $(PORT) $(A)")
+    field(EGU,  "V")
+    field(PREC, "5")
+    field(FLNK, "$(P):VFIXED_RBV")  
+}
+record(ai, "$(P):VFIXED_RBV")
+{
+    field(DESC, "Get DC Voltage value")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getF(:SOURce:VOLTage) $(PORT) $(A)")
+ #   field(FLNK, "$(P):VFIXED_RBV") 
+    field(EGU,  "V")
+    field(PREC, "5")
+    field(LOPR, "-1100")
+    field(HOPR, "1100")
+    field(PINI, "YES")
+}
+
+# Source Delay 
+record(ao, "$(P):DELAY")
+{
+    field(DESC, "Set source delay in seconds")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF1(:SOURce:DELay) $(PORT) $(A)")
+    field(EGU,  "s")
+    field(PREC, "6")
+    field(FLNK, "$(P):DELAY_RBV")
+}
+record(ai, "$(P):DELAY_RBV")
+{
+    field(DESC, "Get source delay in seconds")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getF1(:SOURce:DELay) $(PORT) $(A)")
+    field(EGU,  "s")
+    field(PREC, "6")
+    field(PINI, "YES")
+}
+
+################
+# Sense Settings
+################
+
+# Measurement Mode V,I,R
+record(mbbo, "$(P):SENSE") 
+{
+    field(DESC, "Set Measurement Mode")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setmMode $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "Current")
+    field(ONVL, "1")
+    field(ONST, "Voltage")
+    field(TWVL, "2")
+    field(TWST, "Resistance")
+    field(FLNK, "$(P):SOURCE_STATE_RBV")
+}
+
+# Sense Range for V and I 
+record(mbbo, "$(P):ISENSE_RANGE")
+{
+    field(DESC, "Set the Current Sense Range")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setmRange $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "MIN (1uA)")
+    field(ONVL, "1")
+    field(ONST, "MAX (1A)")
+    field(TWVL, "2")
+    field(TWST, "DEFAULT (100uA)")
+}
+record(mbbo, "$(P):VSENSE_RANGE")
+{
+    field(DESC, "Set the Voltage Sense Range")
+    field(DTYP, "stream")
+    field(OUT,  "@devkeithleyK2410.proto setmRange $(PORT) $(A)")
+    field(ZRVL, "0")
+    field(ZRST, "MIN (200mV)")
+    field(ONVL, "1")
+    field(ONST, "MAX (1100V)")
+    field(TWVL, "2")
+    field(TWST, "DEFAULT (20V)")
+}
+
+################
+# Sweep Settings                                                 
+################
+
+# Set No.Sweep points for 1 Sweep
+record(ao, "$(P):NSWEEP")
+{
+    field(DESC, "Enter No.Sweep Points")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF1(:TRIG:COUN) $(PORT) $(A)")
+    field(FLNK, "$(P):NSWEEP_RBV")
+}
+record(ai, "$(P):NSWEEP_RBV")
+{
+    field(DESC, "Sweep points?")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getF1(:TRIG:COUN) $(PORT) $(A)")
+    field(PINI, "YES")
+}
+
+record(ao, "$(P):ISRC_LIST")
+{
+    field(DESC, "Enter I list")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto getF1(:TRIG:COUN) $(PORT) $(A)")
+}
+
+# Arm count to repeat sweep points (0-2500 or infinite).
+record(ao, "$(P):ARM_COUNT")
+{
+    field(DESC, "Set trigger arm count")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF(:ARM:COUNt) $(PORT) $(A)")
+    field(FLNK, "$(P):ARM_COUNT_RBV")
+}
+record(ao, "$(P):ARM_COUNT_INF")
+{
+    field(DESC, "Set trigger arm infinite")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setarmInf $(PORT) $(A)")
+    field(FLNK, "$(P):ARM_COUNT_RBV")
+}
+record(ai, "$(P):ARM_COUNT_RBV")
+{
+    field(DESC, "Read trigger arm")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getF(:ARM:COUNT) $(PORT) $(A)")
+    field(PINI, "YES")
+}
+
+# Hold time for each sweep point 
+record(ao, "$(P):ARM_INTERVAL")
+{
+    field(DESC, "Source step Interval")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setarmInt(:ARM:TIMer) $(PORT) $(A)")
+    field(FLNK, "$(P):ARM_INTERVAL_RBV")
+}
+
+record(ai, "$(P):ARM_INTERVAL_RBV")
+{
+    field(DESC, "Source step Interval?")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getF(:ARM:TIMer) $(PORT) $(A)")
+    field(PINI, "YES")
+}
+
+# Start and stop Current levels (I-source sweep)
+record(ao, "$(P):ISTART")
+{
+    field(DESC, "Set start current level")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF(:SOURce:CURRent:STARt) $(PORT) $(A)")
+    field(EGU,  "A")
+    field(PREC, "5")
+}
+record(ao, "$(P):ISTOP")
+{
+    field(DESC, "Set stop current level")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setF(:SOURce:CURRent:STOP) $(PORT) $(A)")
+    field(EGU,  "A")
+    field(PREC, "5")
+}
+
+###############################################
+# From here on everything needs to be re worked
+###############################################
+
+# Start the source-measure cycle.
+record(ao, "$(P):FIRE")
+{
+    field(DESC, "Start Source/Measure Cycle")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto acquire $(PORT) $(A)")
+}
+
+# Abort the source-measure cycle
+record(ao, "$(P):ABORT")
+{
+    field(DESC, "Abort Source/Measure Cycle")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto cmd(ABORt) $(PORT) $(A)")
+}
+
+# Disable buffer storage
+record(ao, "$(P):STOP_BUFFER")
+{
+    field(DESC, "Disable buffer storage")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto setbufOff $(PORT) $(A)")
+}
+
+record(stringin, "$(P):BYTES_RBV")
+{
+    field(DESC, "Query bytes available")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getS(:TRACe:FREE) $(PORT) $(A)")
+    field(PINI, "YES")
+}
+
+# Read and clear buffer
+record(stringin, "$(P):BUFFER_RBV")
+{
+    field(DESC, "Read measurements")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto readBuff(:FETch) $(PORT) $(A)")
+    #field(PINI, "YES")
+    #field(SCAN, "2 second")
+}
+
+# Format data string
+record(ao, "$(P):VT")
+{
+    field(DESC, "Read V vs. t")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto readVoltMeas $(PORT) $(A)")
+    field(FLNK, "$(P):DATA_RBV")
+}
+record(ao, "$(P):IT")
+{
+    field(DESC, "Read I vs. t")
+    field(DTYP, "stream")
+    field(OUT, "@devkeithleyK2410.proto readCurrMeas $(PORT) $(A)")
+    field(FLNK, "$(P):DATA_RBV")
+}
+record(stringin, "$(P):DATA_RBV")
+{
+    field(DESC, "Elements in data str?")
+    field(DTYP, "stream")
+    field(INP, "@devkeithleyK2410.proto getS(:FORMat:ELEMents) $(PORT) $(A)")
+    field(PINI, "YES")
+  #  field(SCAN, "1 second")
+}

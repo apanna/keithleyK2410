@@ -1,0 +1,138 @@
+######################################################
+#
+# __Author__        =   Alireza Panna, NIH/NHLBI (IPL)
+# __status__        =   stable
+# __date__          =   10/2014
+# __version__       =   1.0
+# __to-do__         =
+# __update-log__    =
+######################################################
+
+Terminator = CR;
+ReplyTimeout = 1000;
+
+# Generic Commands
+cmd {
+    out "\$1";
+}
+# Get functions
+getIDN {
+    out "*IDN?";
+    in "%\$1[^\r\n]";
+    ExtraInput = Ignore;
+}
+getD {
+    out "\$1?";
+    in "%d";
+    ExtraInput = Ignore;
+}
+getD1 {
+    out "\$1";
+    in "%d";
+    ExtraInput = Ignore;
+}
+getF {
+    out "\$1?";
+    in "%f";
+    ExtraInput = Ignore;
+}
+getF1 {
+    out "\$1?";
+    in "%g";
+    ExtraInput = Ignore;
+}
+getS {
+    out "\$1?";
+    in "%s";
+    ExtraInput = Ignore;
+}
+
+# Set functions
+setD {
+    out "\$1 %d";
+    @init { out "\$1?"; in "%d"; }
+}
+setD1 {
+    out "\$1%d";
+    @init { out "\$1"; in "%d"; }
+}
+setF {
+    out "\$1 %f";
+    #@init { out "\$1?"; in "%f"; }
+}
+setF1 {
+    out "\$1 %g";
+    #@init { out "\$1?"; in "%g"; }
+}
+
+# Source Mode Protocol
+setsMode {
+    out ":SOURce:FUNCtion %{CURRent|VOLTage}";
+}
+
+# Measurement Mode Protocol
+setmMode {
+    out ":SENSe:FUNCtion %{\"CURRent\"|\"VOLTage\"|\"RESistance\"}";
+}
+
+# Source Range Protocol
+setsRange {
+    out ":SOURce:\$1:RANGe %{MINimum|MAXimum|DEFault}";
+}
+
+# Sense Range Protocol
+setmRange {
+    out ":SENSe:\$1:RANGe %{MINimum|MAXimum|DEFault}";    
+}
+
+# Source Mode Protocol
+setsourcingMode {
+     out ":SOURce:CURRent:MODE %{FIXed|SWEep|LIST}";
+}
+
+# Set Current list Protocol
+setIList {
+    out ":SOURce:LIST:CURRent %s"
+}
+
+# Auto Zero Protocol
+setazMode {
+     out ":SYSTem:AZERo:STATe %{OFF|ON|ONCE}";
+}
+
+# Arm infinite Protocol
+setarmInf {
+     out ":ARM:COUNT INFinite";
+}
+
+setarmInt {
+     out ":ARM:SOURce TIMer";
+     out "\$1 %d";
+}
+
+
+# Disable buffer Protocol
+setbufOff {
+    out ":TRACe:FEED:CONTrol NEXT";
+}
+# Read Measurement Protocol (Voltage)
+
+readVoltMeas {
+    out":FORMat:ELEMents VOLTage,TIME";
+}
+readCurrMeas {
+    out":FORMat:ELEMents CURRent,TIME";
+}
+
+readBuff {
+    out "\$1?";
+    in "%s";
+    ExtraInput = Ignore;
+    out ":TRACe:CLEar";
+   
+}
+
+acquire {
+     out ":TRACe:POINts 2500";
+     out ":READ?";
+}
