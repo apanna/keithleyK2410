@@ -13,64 +13,72 @@ PROD_IOC = keithleyK2410
 DBD += keithleyK2410.dbd
 
 # keithleyK2410.dbd will be made up from these files:
-keithleyK2410_DBD += base.dbd
+$(PROD_IOC)_DBD += base.dbd
 # To send command_string to the system command interpreter for execution
-keithleyK2410_DBD += system.dbd
+$(PROD_IOC)_DBD += system.dbd
 
+# Include dbd files from all support applications:
+ifdef AUTOSAVE
+	$(PROD_IOC)_DBD += asSupport.dbd
+	$(PROD_IOC)_LIBS += autosave
+endif
 ifdef ASYN
-	keithleyK2410_DBD += asyn.dbd drvAsynSerialPort.dbd
-	keithleyK2410_DBD += drvAsynIPPort.dbd
-	keithleyK2410_LIBS += asyn
+	$(PROD_IOC)_DBD += asyn.dbd drvAsynSerialPort.dbd
+	$(PROD_IOC)_DBD += drvAsynIPPort.dbd
+	$(PROD_IOC)_LIBS += asyn
 endif
 ifdef STD
-	keithleyK2410_DBD += stdSupport.dbd
-	keithleyK2410_LIBS += std
+	$(PROD_IOC)_DBD += stdSupport.dbd
+	$(PROD_IOC)_LIBS += std
 endif
 ifdef CALC
-	keithleyK2410_DBD += calcSupport.dbd
-	keithleyK2410_LIBS += calc
+	$(PROD_IOC)_DBD += calcSupport.dbd
+	$(PROD_IOC)_LIBS += calc
 endif
 ifdef BUSY
-	keithleyK2410_DBD += busySupport.dbd
-	keithleyK2410_LIBS += busy
+	$(PROD_IOC)_DBD += busySupport.dbd
+	$(PROD_IOC)_LIBS += busy
 endif
 ifdef SSCAN
-	keithleyK2410_DBD += sscanSupport.dbd
-	keithleyK2410_LIBS += sscan
+	$(PROD_IOC)_DBD += sscanSupport.dbd
+	$(PROD_IOC)_LIBS += sscan
 	ifdef SNCSEQ
-		keithleyK2410_DBD += sscanProgressSupport.dbd
-		keithleyK2410_LIBS += scanProgress
+		$(PROD_IOC)_DBD += sscanProgressSupport.dbd
+		$(PROD_IOC)_LIBS += scanProgress
 	endif
 endif
-ifdef AUTOSAVE
-	keithleyK2410_DBD += asSupport.dbd
-	keithleyK2410_LIBS += autosave
-endif
 ifdef SNCSEQ
-	keithleyK2410_DBD += devSequencer.dbd
-	keithleyK2410_LIBS += seqDev seq pv
+	# seq-2-1 and earlier has devSequencer
+	ifeq (seq-2-1, $(findstring seq-2-1, $(SNCSEQ)))
+	else ifeq (seq-2.1, $(findstring seq-2.1, $(SNCSEQ)))
+		$(PROD_IOC)_DBD += devSequencer.dbd
+		$(PROD_IOC)_LIBS += seqDev seq pv
+	# seq-2-2
+	else 
+		$(PROD_IOC)_LIBS += seq pv
+	endif
 endif
 ifdef STREAM
-	keithleyK2410_DBD += stream.dbd
-	keithleyK2410_LIBS += stream 
+	$(PROD_IOC)_DBD += stream.dbd
+	$(PROD_IOC)_LIBS += stream 
 endif
 ifdef DEVIOCSTATS
-	keithleyK2410_DBD += devIocStats.dbd iocAdmin.dbd
-	keithleyK2410_LIBS += devIocStats
+	$(PROD_IOC)_DBD += devIocStats.dbd iocAdmin.dbd
+	$(PROD_IOC)_LIBS += devIocStats
 endif
 
-# keithleyK2410_registerRecordDeviceDriver.cpp derives from keithleyK2410.dbd
-keithleyK2410_SRCS += keithleyK2410_registerRecordDeviceDriver.cpp
+# $(PROD_IOC)_registerRecordDeviceDriver.cpp derives from keithleyK2410.dbd
+$(PROD_IOC)_SRCS += keithleyK2410_registerRecordDeviceDriver.cpp
 
 # Build the main IOC entry point on workstation OSs.
-keithleyK2410_SRCS_DEFAULT += keithleyK2410Main.cpp
-keithleyK2410_SRCS_vxWorks += -nil-
+$(PROD_IOC)_SRCS_DEFAULT += keithleyK2410Main.cpp
+$(PROD_IOC)_SRCS_vxWorks += -nil-
 
 # Add support from base/src/vxWorks if needed
-#keithleyK2410_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
+#$(PROD_IOC)_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 # Finally link to the EPICS Base libraries
-keithleyK2410_LIBS += $(EPICS_BASE_IOC_LIBS)
+$(PROD_IOC)_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 
