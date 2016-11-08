@@ -50,6 +50,8 @@ endif
 ifdef SNCSEQ
 	# seq-2-1 and earlier has devSequencer
 	ifeq (seq-2-1, $(findstring seq-2-1, $(SNCSEQ)))
+		$(PROD_IOC)_DBD += devSequencer.dbd
+		$(PROD_IOC)_LIBS += seqDev seq pv
 	else ifeq (seq-2.1, $(findstring seq-2.1, $(SNCSEQ)))
 		$(PROD_IOC)_DBD += devSequencer.dbd
 		$(PROD_IOC)_LIBS += seqDev seq pv
